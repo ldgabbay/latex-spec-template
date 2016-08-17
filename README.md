@@ -1,3 +1,7 @@
+# Description
+
+This library provides a skeleton of LaTeX code to generate documentation like that used for the C++ Standard.  Many of the files here are stripped from the original source found [here](https://github.com/cplusplus/draft).
+
 # Commands
 
 Section Heading:	`\rSec`#`[`ref`]{`Title`}` // # starts from zero
