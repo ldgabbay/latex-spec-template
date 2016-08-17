@@ -1,0 +1,17 @@
+%!TEX root = root.tex
+
+\usepackage{lipsum}
+
+\newenvironment{parameters}{
+\begin{ctabular}{ p{50pt} p{60pt} p{100pt} p{200pt} }
+\toprule
+\textbf{Freq.} &
+\textbf{Name} &
+\textbf{Format} &
+\textbf{Description} \\
+\midrule
+}{
+\\
+\bottomrule
+\end{ctabular}  
+}
