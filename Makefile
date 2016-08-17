@@ -19,7 +19,7 @@ default:
 	latexmk -pdf root
 
 clean:
-	rm -f *.aux std-gram.ext *.idx *.ilg *.ind *.log *.lot *.lof *.tmp *.out *.glo *.gls *.fls *.fdb* *.toc *.xtr
+	rm -f *.aux std-gram.ext etc/front.aux *.idx *.ilg *.ind *.log *.lot *.lof *.tmp *.out *.glo *.gls *.fls *.fdb* *.toc *.xtr
 
 distclean: clean
 	rm -f root.pdf
