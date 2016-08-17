@@ -20,14 +20,14 @@
 %%--------------------------------------------------
 %%  create page styles
 
-\makepagestyle{cpppage}
-\makeevenhead{cpppage}{\copyright\,\textsc{\doccopyrightholder}}{}{\textbf{\docno}}
-\makeoddhead{cpppage}{\copyright\,\textsc{\doccopyrightholder}}{}{\textbf{\docno}}
-\makeevenfoot{cpppage}{\leftmark}{}{\thepage}
-\makeoddfoot{cpppage}{\leftmark}{}{\thepage}
+\makepagestyle{docpage}
+\makeevenhead{docpage}{\copyright\,\textsc{\doccopyrightholder}}{}{\textbf{\docno}}
+\makeoddhead{docpage}{\copyright\,\textsc{\doccopyrightholder}}{}{\textbf{\docno}}
+\makeevenfoot{docpage}{\leftmark}{}{\thepage}
+\makeoddfoot{docpage}{\leftmark}{}{\thepage}
 
 \makeatletter
-\makepsmarks{cpppage}{%
+\makepsmarks{docpage}{%
   \let\@mkboth\markboth
   \def\chaptermark##1{\markboth{##1}{##1}}%
   \def\sectionmark##1{\markboth{%
@@ -52,7 +52,7 @@
     }{\rightmark}}}
 \makeatother
 
-\aliaspagestyle{chapter}{cpppage}
+\aliaspagestyle{chapter}{docpage}
 
 %%--------------------------------------------------
 %%  set heading styles for main matter
