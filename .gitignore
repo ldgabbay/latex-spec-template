@@ -1,0 +1,17 @@
+*.aux
+*.idx
+*.ilg
+*.ind
+*.log
+*.lot
+*.lof
+*.tmp
+*.out
+*.glo
+*.gls
+*.fls
+*.fdb*
+*.toc
+*.xtr
+std-gram.ext
+root.pdf
