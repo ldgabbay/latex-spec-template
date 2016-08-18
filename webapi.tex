@@ -3,15 +3,33 @@
 \usepackage{lipsum}
 
 \newenvironment{parameters}{
-\begin{ctabular}{ p{50pt} p{60pt} p{100pt} p{200pt} }
-\toprule
-\textbf{Freq.} &
-\textbf{Name} &
-\textbf{Format} &
-\textbf{Description} \\
-\midrule
-}{
-\\
-\bottomrule
-\end{ctabular}  
+	% \begin{longtable}{ p{.20 \textwidth} p{.80 \textwidth} }
+	\begin{longtable}{ p{40pt} p{80pt} p{80pt} p{220pt} }
+
+	% \caption{\label{tab:xref}caption} \\
+	\toprule
+	\textbf{Freq.} &
+	\textbf{Name} &
+	\textbf{Format} &
+	\textbf{Description} \\
+	\midrule
+	\endfirsthead
+
+	% \caption[]{caption (continued)} \\
+	\toprule
+	\textbf{Freq.} &
+	\textbf{Name} &
+	\textbf{Format} &
+	\textbf{Description} \\
+	\midrule
+	\endhead
+
+	\midrule
+	\endfoot
+
+	\bottomrule
+	\endlastfoot
+}
+{
+	\end{longtable}
 }
