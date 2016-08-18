@@ -1,30 +1,53 @@
 %!TEX root = root.tex
-\rSec0[example]{Example section}
+\rSec0[services]{Services}
+
+\rSec1[services.get-root]{\tcode{GET} \term{root}}
 
 \pnum
-Let's have some fun.
+This is the initial endpoint for retrieving all the other endpoints for this instance of the IBE.
 
+\rSec2[services.get-root.request]{Request}
 
-\rSec1[example.first]{First subsection}
-
-\pnum
-Boy, this is fun.
-
-\lipsum[1-2]
-
+\rSec3[services.get-root.request.query]{Query String}
 \begin{parameters}
-optional &
+required &
 id &
 string &
-\lipsum[1] \\
+The instance id of the site.
+\end{parameters}
+
+\rSec2[services.get-root.response1]{Response}
+
+\rSec3[services.get-root.response1.status]{Status}
+
+\tcode{200 OK}
+
+\rSec3[services.get-root.response1.headers]{Headers}
+
+\begin{parameters}
+required &
+Content-Type &
+\tcode{application/json} &
+ \\
 
 required &
-type &
-string &
-\lipsum[2] \\
+Last-Modified &
+date &
+e.g. \tcode{Wed, 08 Jan 2003 23:11:55 GMT} \\
 
-0..3 &
-foo &
-number &
-\lipsum[3]
+required &
+ETag &
+string &
+
 \end{parameters}
+
+\rSec3[services.get-root.response1.body]{Body}
+
+\term{Root}~(\ref{schemas.root})
+
+
+
+
+\rSec0[schemas]{Schemas}
+
+\rSec1[schemas.root]{Root}
