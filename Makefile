@@ -11,42 +11,50 @@
 #   texlive-fonts-extra
 #   texlive-generic-recommended
 
-FIGURES = $(patsubst %.dot,%.pdf,$(wildcard *.dot))
+BUILD_DIR = build
+OUTPUT_FN = document.pdf
 
-ROOTPDF = pdflatex root | grep -v "^Overfull"
+$(OUTPUT_FN): force_rebuild
+	cp -f $(BUILD_DIR)/root.pdf $(OUTPUT_FN)
 
-default:
-	latexmk -pdf root
+force_rebuild:
+	# mkdir -p $(BUILD_DIR)
+	latexmk -output-directory=$(BUILD_DIR) -pdf root
 
 clean:
-	rm -f *.aux std-gram.ext *.idx *.ilg *.ind *.log *.lot *.lof *.tmp *.out *.glo *.gls *.fls *.fdb* *.toc *.xtr
+	rm -rf $(BUILD_DIR)
 
 distclean: clean
-	rm -f root.pdf
+	rm -f $(OUTPUT_FN)
 
-refresh:
-	$(ROOTPDF)
 
-rebuild:
-	$(ROOTPDF)
-	$(ROOTPDF)
-	$(ROOTPDF)
-
-full: $(FIGURES) reindex
-
-%.pdf: %.dot
-	dot -o $@ -Tpdf $<
-
-reindex:
-	$(ROOTPDF)
-	$(ROOTPDF)
-	$(ROOTPDF)
-	makeindex generalindex
-	makeindex libraryindex
-	makeindex grammarindex
-	makeindex impldefindex
-	makeindex -s basic.gst -o xrefindex.gls xrefindex.glo
-	$(ROOTPDF)
-	$(ROOTPDF)
+# FIGURES = $(patsubst %.dot,%.pdf,$(wildcard *.dot))
+# 
+# ROOTPDF = pdflatex root | grep -v "^Overfull"
+# 
+# refresh:
+# 	$(ROOTPDF)
+# 
+# rebuild:
+# 	$(ROOTPDF)
+# 	$(ROOTPDF)
+# 	$(ROOTPDF)
+# 
+# full: $(FIGURES) reindex
+# 
+# %.pdf: %.dot
+# 	dot -o $@ -Tpdf $<
+# 
+# reindex:
+# 	$(ROOTPDF)
+# 	$(ROOTPDF)
+# 	$(ROOTPDF)
+# 	makeindex generalindex
+# 	makeindex libraryindex
+# 	makeindex grammarindex
+# 	makeindex impldefindex
+# 	makeindex -s basic.gst -o xrefindex.gls xrefindex.glo
+# 	$(ROOTPDF)
+# 	$(ROOTPDF)
 
 ### Makefile ends here
