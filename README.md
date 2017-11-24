@@ -25,6 +25,9 @@ Term:	`\term{`the term`}`
 
 Code Block:	`\begin{codeblock}`the code`\end{codeblock}`
 
+(Inside a `codeblock`, the `@` character is an escape character that allows for \latex commands. To enter `@`, use `@\atsign@`)
+
+
 Floating Table:
 
 	\begin{floattable}{Title}{ref}
