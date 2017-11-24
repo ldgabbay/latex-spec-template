@@ -1,9 +1,53 @@
 %!TEX root = root.tex
 \rSec0[services]{Services}
 
-\rSec1[services.get-root]{\tcode{GET} \term{root}}
+%----------------------------------------------------------------------
 
-\pnum
+\rSec1[services.bad-request]{Bad Request}
+
+In the event any request is malformed or invalid, this would be the response.
+
+\rSec2[services.bad-request.response400]{Response --- Bad Request}
+
+\rSec3[services.bad-request.response400.status]{Status}
+
+\tcode{400 Bad Request}
+
+\rSec3[services.bad-request.response400.body]{Body}
+
+\term{TBadRequestResponse}~(\ref{schemas.TBadRequestResponse})
+
+%----------------------------------------------------------------------
+
+\rSec1[services.public-cacheable]{Public Cacheable}
+
+In the event any request is malformed or invalid, this would be the response.
+
+
+\rSec2[services.public-cacheable.request]{Request}
+
+\rSec3[services.public-cacheable.request.headers]{Headers}
+\begin{parameters}
+required &
+Accept-Language &
+string &
+The language of the language-specific data to be returned.
+\end{parameters}
+
+\rSec2[services.public-cacheable.response400]{Response --- Bad Request}
+
+\rSec3[services.public-cacheable.response400.status]{Status}
+
+\tcode{400 Bad Request}
+
+\rSec3[services.public-cacheable.response400.body]{Body}
+
+\term{TBadRequestResponse}~(\ref{schemas.TBadRequestResponse})
+
+%----------------------------------------------------------------------
+
+\rSec1[services.get-root]{\tcode{GET} \term{Root}}
+
 This is the initial endpoint for retrieving all the other endpoints for this instance of the IBE.
 
 \rSec2[services.get-root.request]{Request}
@@ -16,13 +60,14 @@ string &
 The instance id of the site.
 \end{parameters}
 
-\rSec2[services.get-root.response1]{Response}
 
-\rSec3[services.get-root.response1.status]{Status}
+\rSec2[services.get-root.response200]{Response --- OK}
+
+\rSec3[services.get-root.response200.status]{Status}
 
 \tcode{200 OK}
 
-\rSec3[services.get-root.response1.headers]{Headers}
+\rSec3[services.get-root.response200.headers]{Headers}
 
 \begin{parameters}
 required &
@@ -32,8 +77,8 @@ Content-Type &
 
 required &
 Last-Modified &
-date &
-e.g. \tcode{Wed, 08 Jan 2003 23:11:55 GMT} \\
+RFC-1123 DateTime \newline (\ref{schemas.rfc1123datetime}) &
+The last time and date this resource was modified.\\
 
 required &
 ETag &
@@ -41,13 +86,1355 @@ string &
 
 \end{parameters}
 
-\rSec3[services.get-root.response1.body]{Body}
+\rSec3[services.get-root.response200.body]{Body}
 
-\term{Root}~(\ref{schemas.root})
+\term{TSiteRoot}~(\ref{schemas.TSiteRoot})
+
+\rSec2[services.get-root.response404]{Response --- Not Found}
+
+The given instance id does not exist.
+
+\rSec3[services.get-root.response404.status]{Status}
+
+\tcode{404 Not Found}
+
+
+
+%----------------------------------------------------------------------
+
+
+
+\rSec1[services.get-staticdata]{\tcode{GET} \term{StaticData}}
+
+\pnum
+Retrieves all the language- and locale-independent static data any client might need to run this application.
+
+\rSec2[services.get-staticdata.request]{Request}
+
+\rSec2[services.get-staticdata.response200]{Response}
+
+\rSec3[services.get-staticdata.response200.status]{Status}
+
+\tcode{200 OK}
+
+\rSec3[services.get-staticdata.response200.body]{Body}
+
+\term{TStaticData}~(\ref{schemas.TStaticData})
+
+
+
+
+\rSec1[services.get-staticlanguagedata]{\tcode{GET} \term{StaticLanguageData}}
+
+\pnum
+Retrieves all the language-specific static data any client might need to run this application in the given language.
+
+\rSec2[services.get-staticlanguagedata.request]{Request}
+
+\rSec3[services.get-staticlanguagedata.request.query]{Headers}
+\begin{parameters}
+required &
+Accept-Language &
+string &
+The language of the language-specific data to be returned.
+\end{parameters}
+
+
+\rSec2[services.get-staticlanguagedata.response200]{Response}
+
+\rSec3[services.get-staticlanguagedata.response200.status]{Status}
+
+\tcode{200 OK}
+
+\rSec3[services.get-staticlanguagedata.response200.body]{Body}
+
+\term{TStaticLanguageData}~(\ref{schemas.TStaticLanguageData})
+
+
+\rSec2[services.get-staticlanguagedata.response404]{Response}
+
+\rSec3[services.get-staticlanguagedata.response404.status]{Status}
+
+\tcode{404 Not Found}
+
 
 
 
 
 \rSec0[schemas]{Schemas}
 
-\rSec1[schemas.root]{Root}
+\rSec1[schemas.TBadRequestResponse]{TBadRequestResponse}
+
+\rSec1[schemas.TErrorResponse]{TErrorResponse}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "errors"
+  description: "An error response"
+  properties:
+     errors:
+       description: "Map of field : [error numbers]"
+       additionalProperties:
+         \$ref: "#/definitions/TFieldErrors"
+\end{codeblock}
+
+\rSec1[schemas.TFieldErrors]{TFieldErrors}
+\begin{codeblock}
+  type: "array"
+  description: "the reponse errors"
+  items:
+    type: "number"
+\end{codeblock}
+
+
+
+
+\rSec1[schemas.TSiteRoot]{TSiteRoot}
+\begin{codeblock}
+	: object
+\end{codeblock}
+
+\begin{parameters}
+required &
+\tcode{"version"} &
+\tcode{string} &
+The version of this API. Uses semantic versioning. \\
+
+required &
+\tcode{"services"} &
+\term{TSiteRootServices}~(\ref{schemas.TSiteRootServices}) &
+The URLs for every resource in this API. \\
+\end{parameters}
+
+
+\rSec1[schemas.TSiteRootServices]{TSiteRootServices}
+\begin{codeblock}
+	: object
+\end{codeblock}
+
+\begin{parameters}
+required &
+\tcode{"StaticData"} &
+\tcode{string} &
+The URL for the StaticData service. \\
+
+required &
+\tcode{"StaticLanguageData"} &
+\tcode{string} &
+The URL for the StaticLanguageData service. \\
+
+required &
+\tcode{"StaticLocaleData"} &
+\tcode{string} &
+The URL for the StaticLocaleData service. \\
+
+required &
+\tcode{"Availability"} &
+\tcode{string} &
+The URL for the Availability service. \\
+
+required &
+\tcode{"Reservations"} &
+\tcode{string} &
+The URL for the Reservations service. \\
+
+required &
+\tcode{"Reservation"} &
+\tcode{string} &
+The URL for the Reservation service. \\
+
+required &
+\tcode{"CurrencyExchange"} &
+\tcode{string} &
+The URL for the CurrencyExchange service. \\
+\end{parameters}
+
+
+\rSec1[schemas.TStaticData]{TStaticData}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "allowGuestAccounts"
+  - "chain"
+  - "defaultLanguage"
+  - "defaultLocale"
+  - "id"
+  - "logo"
+  - "phoneNumber"
+  - "title"
+  - "website"
+  properties:
+    id:
+      type: "string"
+      description: site.id
+    logo:
+      type:
+      - "string"
+      - "null"
+      description: "Hotel's logo as a transparent image"
+    title:
+      type: "string"
+      description: "single line hotel name"
+    phoneNumber:
+      type:
+      - "string"
+      - "null"
+      description: "main phone number for site or null"
+    website:
+      type: "string"
+      description: "url to return to when exiting"
+    languages: 
+      type: "object"
+      description: "Map of { \"en_US\" : { \"name\": \"English\", \"icon\": \"http.....\"}. ...}"
+      additionalProperties:
+        \$ref: "#/definitions/Language"
+    currencies:
+      type: "object"
+      description: "Map of {\"currency_code\": \"displayName\", ... }"
+      additionalProperties:
+        type: "string"
+    defaultLocale:
+      type: "string"
+      description: "https://tools.ietf.org/html/bcp47"
+    defaultLanguage:
+      type: "string"
+      description: "https://tools.ietf.org/html/bcp47"
+    allowGuestAccounts:
+      type: "boolean"
+      description: "allow creation and login of guest accounts"
+    chain:
+      \$ref: "#/definitions/Chain"
+\end{codeblock}
+
+\rSec1[schemas.TStaticLanguageData]{TStaticLanguageData}
+\begin{codeblock}
+  type: "object"
+  properties:
+    common:
+      \$ref: "#/definitions/CommonLocalizedStrings"
+     properties:
+       type: "string"
+       description: "Map of { property.id : { PropertyLocalizedStrings }, ... }"
+       additionalProperties:
+         \$ref: "#/definitions/PropertyLocalizedStrings"
+    guestTypes:
+      type: "object"
+      description: "Map of { guestType.id : { GuestTypeLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/GuestTypeLocalizedStrings"
+    codeTypes:
+      type: "object"
+      description: "Map of { codeType.id : { CodeTypeLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/CodeTypeLocalizedStrings"
+    roomTypeClasses:
+      type: "object"
+      description: "Map of { roomTypeClass.id : { RoomTypeClassLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/RoomTypeClassLocalizedStrings"
+    roomTypes:
+      type: "object"
+      description: "Map of { roomType.id : { RoomTypeLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/RoomTypeLocalizedStrings"
+    rates:
+      type: "object"
+      description: "Map of { rate.id : { RateLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/RateLocalizedStrings"
+    chargeTypes:
+      type: "object"
+      description: "Map of { chargeType.id : { ChargeTypeLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/ChargeTypeLocalizedStrings"
+    roomFeatures:
+      type: "object"
+      description: "Map of { roomFeature.id : { RoomFeatureLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/RoomFeatureLocalizedStrings"
+    errors:
+      type: "object"
+      description: "Map of { error.id : { ErrorLocalizedStrings }, ...}"
+      additionalProperties:
+        type: "string"
+    items:
+      type: "object"
+      description: "Map of { item.id : { IThe api versiontemLocalizedStrings }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/ItemLocalizedStrings"
+\end{codeblock}
+
+\rSec1[schemas.TStaticLocaleData]{TStaticLocaleData}
+\begin{codeblock}
+  type: "object"
+\end{codeblock}
+
+\rSec1[schemas.CurrencyResponse]{CurrencyResponse}
+\begin{codeblock}
+  type: "object"
+  description: "A currency ratio from USD, symbol, "
+  properties:
+     ratio:
+       type: "number"
+       description: "Multiply by this to get the requested currency from USD."
+       format: float
+     decimal_character:
+       type: "string"
+       description: "The decimal [\".\", \",\"] separator"
+     thousands_character:
+       type: "string"
+       description: "The thousands [\",\", \" \"] separator"
+     decimal_places:
+       type: "number"
+       description: "The number of decimal places after the"
+     symbol:
+       type: "string"
+       description: "UTF-8 encoded currency symbol"
+\end{codeblock}
+
+\rSec1[schemas.TPostReservationsRequest]{TPostReservationsRequest}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "createLogin"
+  - "guestEmailAddress"
+  - "guestFirstName"
+  - "guestLastName"
+  - "loginEmailAddress"
+  - "loginPassword"
+  - "paymentMethod"
+  - "phoneNumber"
+  - "signUpForNewsletter"
+  properties:
+    guestFirstName:
+      type: "string"
+    guestLastName:
+      type: "string"
+    guestEmailAddress:
+      type: "string"
+      description: Guest Email Address
+    speciaRequest:
+      type: "string"
+    paymentMethod:
+      \$ref: "#/definitions/PaymentMethod"
+    phoneNumber:
+      type: string
+      description: Phone Number
+    createLogin:
+      type: "boolean"
+    loginEmailAddress:
+      type: "string"
+      description: Login Email Address
+    loginPassword:
+      type: string
+      description: Login Password
+    signUpForNewsletter:
+      type: "boolean"
+      description: "Sign up for a newsletter"
+\end{codeblock}
+
+\rSec1[schemas.TPostReservationsCreatedResponse]{TPostReservationsCreatedResponse}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "billingMethodDescriptor"
+  - "confirmationID"
+  - "shoppingCart"
+  properties:
+    confirmationID:
+      type: "string"
+      description: confirmation.id
+    shoppingCart:
+      type: "string"
+      description: "TODO define me"
+    billingMethodDescriptor:
+      type: "string"
+      description: "e.g. Visa xxxx-xxxx-xxxx-1234"
+\end{codeblock}
+
+\rSec1[schemas.Code]{Code}
+\begin{codeblock}
+  type: "object"
+  properties:
+    codeTypeID:
+      type: "string"
+      description: codeType.id
+    code:
+      type: "string"
+      description: "localized code to check"
+\end{codeblock}
+
+\rSec1[schemas.TAvailabilityRequest]{TAvailabilityRequest}
+\begin{codeblock}
+  type: "object"
+  required:
+    - "checkinDate"
+    - "checkoutDate"
+  properties:
+    checkinDate:
+      type: "string"
+      description: Checkin date.
+      format: date
+    checkoutDate:
+      type: "string"
+      description: Checkout date.
+      format: date
+    codes:
+      type: "array"
+      items:
+        \$ref: "#/definitions/Code"
+\end{codeblock}
+
+\rSec1[schemas.TAvailabilityResponse]{TAvailabilityResponse}
+\begin{codeblock}
+  type: "object"
+  properties:
+    roomTypes:
+      type: "array"
+      description: "ordered list of roomType.id's to display"
+      items:
+        type: "string"
+    rates:
+      type: "array"
+      description: "ordered list of rate.id's to display"
+      items:
+        type: "string"
+    priceSchedules:
+      type: "array"
+      description: "Prices"
+      items:
+        \$ref: "#/definitions/PriceSchedule"
+\end{codeblock}
+
+\rSec1[schemas.PriceSchedule]{PriceSchedule}
+\begin{codeblock}
+  type: object
+  description: A Price
+  properties:
+    roomType:
+      type: "string"
+      description: roomType.id
+    rate:
+      type: "string"
+      description: rate.id
+    prices:
+      type: object
+      description: "e.g. GuestTypeCounts as coordinates -> { \"1,1\" : [ 100, 110, 110.99, 95.56] } <- Nightly Prices"
+      additionalProperties:
+          type: array
+          description: Array of Prices indexed by night.
+          items:
+             type: number
+             format: float
+\end{codeblock}
+
+\rSec1[schemas.Language]{Language}
+\begin{codeblock}
+  type: "object"
+  description: "name and icon associated with language"
+  properties:
+    name:
+      type: "string"
+      description: "Human readable name of the Language"
+    icon:
+      type: "string"
+      description: "URL for the icon"
+\end{codeblock}
+
+\rSec1[schemas.ExternalLinks]{ExternalLinks}
+\begin{codeblock}
+  type: "object"
+  description: "URL icon of external link"
+  properties:
+    url:
+      type: string
+      description: "The URL for the external link"
+    icon:
+      type: string
+      description: "The Icon URL for the external link"
+\end{codeblock}
+
+\rSec1[schemas.Chain]{Chain}
+\begin{codeblock}
+  type: "object"
+  description: "A hotel chain/brand."
+  required:
+  - "chargeTypes"
+  - "codeTypes"
+  - "guestTypes"
+  - "id"
+  - "items"
+  - "logo"
+  - "properties"
+  - "rates"
+  - "roomFeatures"
+  - "roomTypeClasses"
+  - "roomTypes"
+  - "title"
+  properties:
+    id:
+      type: "string"
+      description: chain.id
+    logo:
+      type: "string"
+      description: "hotel's logo as a transparent image"
+    title:
+      type: "string"
+      description: "single line hotel name"
+    properties:
+      type: "object"
+      description: "Map of { property.id : { Property }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/Property"
+    guestTypes:
+      type: "object"
+      description: "Map of { guestType.id : { GuestType }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/GuestType"
+    codeTypes:
+      type: "object"
+      description: "Map of { codeType.id : { CodeType }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/CodeType"
+    roomTypeClasses:
+      type: "object"
+      description: "Map of { roomTypeClass.id : { RoomTypeClass }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/RoomTypeClass"
+    roomTypes:
+      type: "object"
+      description: "Map of { roomType.id : { RoomType }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/RoomType"
+    rates:
+      type: "object"
+      description: "Map of { rate.id : { Rate }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/Rate"
+    chargeTypes:
+      type: "object"
+      description: "Map of { chargeType.id : { ChargeType }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/ChargeType"
+    roomFeatures:
+      type: "object"
+      description: "Map of { roomFeature.id : { RoomFeature }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/RoomFeature"
+    externalLinks:
+      type: "array"
+      description: "External links map of URL and Icon"
+      items:
+        \$ref: "#/definitions/ExternalLinks"
+    items:
+      type: "object"
+      description: "Map of { item.id : { Item }, ... }"
+      additionalProperties:
+        \$ref: "#/definitions/Item"
+\end{codeblock}
+
+\rSec1[schemas.Property]{Property}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "defaultLanguage"
+  - "defaultLocale"
+  - "title"
+  properties:
+    title:
+      type: "string"
+      description: "single line hotel name"
+    mailingAddress:
+      \$ref: "#/definitions/Address"
+    phoneNumber:
+      type: "string"
+      description: "Phone Number"
+    defaultLocale:
+      type: "string"
+      description: "https://tools.ietf.org/html/bcp47"
+    defaultLanguage:
+      type: "string"
+      description: "https://tools.ietf.org/html/bcp47"
+  description: "Property Attributes"
+\end{codeblock}
+
+\rSec1[schemas.RoomFeature]{RoomFeature}
+\begin{codeblock}
+  type: "object"
+  description: "
+  A line item description for something inherently part of a Room or RoomType. 
+    e.g. air conditioning.
+  Some are attached to the property. 
+    e.g. swimming pool.
+  Does not include things that can be added or taken away, e.g. wi-fi,breakfast,newspaper"
+  required:
+  - "icon"
+  - "text"
+  properties:
+    id:
+      type: "string"
+      description: roomFeature.id
+    icon:
+      \$ref: "#/definitions/ImageData"
+    text:
+      type: "string"
+      description: "Text substitude for image. Language dependent."
+\end{codeblock}
+
+\rSec1[schemas.ChargeType]{ChargeType}
+\begin{codeblock}
+  type: "object"
+  description: "Additional charges to a room."
+  properties:
+    id:
+      type: "string"
+      description: chargeType.id
+\end{codeblock}
+
+\rSec1[schemas.CodeType]{CodeType}
+\begin{codeblock}
+  type: "object"
+  description: "Guests can add codes to their booking request to get discounts, etc. These are the types of codes"
+  required:
+  - "icon"
+  - "id"
+  properties:
+    id:
+      type: "string"
+      description: codeType.id
+    icon:
+      type: "string"
+      description: icon URL
+\end{codeblock}
+
+\rSec1[schemas.GuestType]{GuestType}
+\begin{codeblock}
+  type: "object"
+  description: "Guest types are grouped into classes, e.g. adults, children, pets"
+  required:
+  - "icon"
+  properties:
+    id:
+      type: "string"
+      description: GuestType.id
+    icon:
+      type: "string"
+      description: icon URL
+\end{codeblock}
+
+\rSec1[schemas.Rate]{Rate}
+\begin{codeblock}
+  type: "object"
+  description: "
+    A rate is a particular configuration of a RoomType. This would be some combination of:
+    * a specification of a RoomTypeVariant (e.g. \"King Suite\" with \"Ocean View\" vs \"King Suite\")
+    * a discount (e.g. AAA, AARP, military)
+    * included AddOns"
+  properties:
+    id:
+      type: "string"
+      description: rate.id
+\end{codeblock}
+
+\rSec1[schemas.RoomTypeClass]{RoomTypeClass}
+\begin{codeblock}
+  type: "object"
+  description: A general type of room, e.g. \"Standard Room\", \"Deluxe Room\".  There are specific variants of a RoomTypeClass, defined as RoomTypes, usually specified as a RoomTypeClass in conjunction with a Rate, e.g. the \"Ocean View\" rate for a \"Standard Room\"
+  required:
+  - "features"
+  - "images"
+  properties:
+    id:
+      type: "string"
+      description: roomTypeClass.id
+    images:
+      type: array
+      description: Array of Image URLs
+      items:
+         type: "string"
+    features:
+      type: array
+      description: roomFeature.id array
+      items:
+         type: "string"
+\end{codeblock}
+
+\rSec1[schemas.RoomType]{RoomType}
+\begin{codeblock}
+  type: "object"
+  description: "A specific variant of a RoomTypeClass, e.g. \"Standard Room with Ocean View\". These are usually implicitly defined by a specific combination of Rate and RoomTypeClass. For example, the potential guest is presented with a selection of RoomTypeClass, chooses \"Standard Room\", then is presented with a selection of Rate, and selects \"Ocean View\" which offers a Standard Room with Ocean View."
+  required:
+  - "class"
+  - "features"
+  - "images"
+  properties:
+    id:
+      type: "string"
+      description: roomType.id
+    class:
+      type: "string"
+      description: roomTypeClass.id
+    images:
+      type: array
+      description: Array of Image URLs
+      items:
+        type: "string" 
+    features:
+      type: array
+      description: roomFeature.id array
+      items:
+         type: "string"
+\end{codeblock}
+
+\rSec1[schemas.CommonLocalizedStrings]{CommonLocalizedStrings}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "add"
+  - "addCode"
+  - "addOnItems"
+  - "addToCalendar"
+  - "additionalOptions"
+  - "additionals"
+  - "amenities"
+  - "averageRatePerNight"
+  - "backToHotelWebsite"
+  - "billingInformation"
+  - "bookNow"
+  - "bookingConfirmation"
+  - "bookingTotal"
+  - "cancelReservation"
+  - "cancellationPolicy"
+  - "changeCurrency"
+  - "checkAvailability"
+  - "checkIn"
+  - "checkInDate"
+  - "checkInTime"
+  - "checkOut"
+  - "checkOutDate"
+  - "confirmBooking"
+  - "confirmYourBooking"
+  - "confirmationNoOrLastName"
+  - "contactUs"
+  - "continue"
+  - "customizeYourStay"
+  - "days"
+  - "done"
+  - "emailAddress"
+  - "enterACode"
+  - "fees"
+  - "findReservations"
+  - "forgotPassword"
+  - "guestEmail"
+  - "guestEmailAddress"
+  - "guestName"
+  - "hotelInformation"
+  - "loading"
+  - "logIn"
+  - "modifyReservation"
+  - "monthsFull"
+  - "monthsShort"
+  - "nights"
+  - "noThanks"
+  - "password"
+  - "perNight"
+  - "planHeader"
+  - "profile"
+  - "rateType"
+  - "rates"
+  - "ratesFrom"
+  - "reservation"
+  - "reservationDetails"
+  - "roomDescription"
+  - "roomRatePerNight"
+  - "roomTota"
+  - "roomType"
+  - "search"
+  - "selectARate"
+  - "selectARoom"
+  - "selectLanguage"
+  - "settings"
+  - "shareReservation"
+  - "signIn"
+  - "taxes"
+  - "total"
+  - "upgrade"
+  - "upgradeFeatures"
+  - "upgradeYourRoom"
+  - "viewRate"
+  properties:
+    monthsFull:
+      type: "array"
+      description: "[January,February,March, ...]"
+      items:
+        type: "string"
+    monthsShort:
+      type: "array"
+      description: "[Jan, Feb, Mar, ...]"
+      items:
+        type: "string"
+    days:
+      type: "array"
+      description: "[Su, Mo, Tu, ...]"
+      items:
+        type: "string"
+    loading:
+      type: "string"
+      description: "Loading..."
+    total:
+      type: "string"
+      description: "Total: "
+    backToHotelWebsite:
+      type: "string"
+      description: "Back to hotel website"
+    profile:
+      type: "string"
+      description: "Profile"
+    signIn:
+      type: "string"
+      description: "Sign In"
+    emailAddress:
+      type: "string"
+      description: "Email Address frank@unknown.com"
+    password:
+      type: "string"
+      description: "Password"
+    logIn:
+      type: "string"
+      description: "Log In"
+    forgotPassword:
+      type: "string"
+      description: "Forgot Password"
+    findReservations:
+      type: "string"
+      description: "Find Reservations"
+    guestEmailAddress:
+      type: "string"
+      description: "Email Address"
+    confirmationNoOrLastName:
+      type: "string"
+      description: "Confirmation No. or Last Name"
+    search:
+      type: "string"
+      description: "Search"
+    settings:
+      type: "string"
+      description: "Settings"
+    selectLanguage:
+      type: "string"
+      description: "Select Language"
+    changeCurrency:
+      type: "string"
+      description: "Change Currency"
+    contactUs:
+      type: "string"
+      description: "Contact Us"
+    planHeader:
+      type: "string"
+      description: "Plan Your Trip"
+    checkIn:
+      type: "string"
+      description: "Check-in"
+    checkOut:
+      type: "string"
+      description: "Check-out"
+    additionalOptions:
+      type: "string"
+      description: "Additional Options"
+    enterACode:
+      type: "string"
+      description: "Enter a Code"
+    addCode:
+      type: "string"
+      description: "add code"
+    done:
+      type: "string"
+      description: "Done"
+    checkAvailability:
+      type: "string"
+      description: "Check Availability"
+    selectARoom:
+      type: "string"
+      description: "Select a Room"
+    ratesFrom:
+      type: "string"
+      description: "Rates From"
+    viewRate:
+      type: "string"
+      description: "View Rate"
+    selectARate:
+      type: "string"
+      description: "Select A Rate"
+    rates:
+      type: "string"
+      description: "Rates"
+    bookNow:
+      type: "string"
+      description: "Book Now"
+    roomDescription:
+      type: "string"
+      description: "Room Description"
+    amenities:
+      type: "string"
+      description: "Amenities"
+    customizeYourStay:
+      type: "string"
+      description: "Customize Your Stay"
+    continue:
+      type: "string"
+      description: "Continue"
+    add:
+      type: "string"
+      description: "Add"
+    upgradeYourRoom:
+      type: "string"
+      description: "Upgrade Your Room"
+    perNight:
+      type: "string"
+      description: "/ night"
+    upgrade:
+      type: "string"
+      description: "Upgrade"
+    noThanks:
+      type: "string"
+      description: "no thanks"
+    upgradeFeatures:
+      type: "string"
+      description: "Upgrade features"
+    confirmYourBooking:
+      type: "string"
+      description: "Confirm Your Booking"
+    reservationDetails:
+      type: "string"
+      description: "Reservation Details"
+    roomType:
+      type: "string"
+      description: "Room Type"
+    rateType:
+      type: "string"
+      description: "Rate Type"
+    averageRatePerNight:
+      type: "string"
+      description: "Avg. rate / night"
+    nights:
+      type: "string"
+      description: "Nights"
+    roomRatePerNight:
+      type: "string"
+      description: "Room rate / night"
+    roomTota:
+      type: "string"
+      description: "Room total"
+    addOnItems:
+      type: "string"
+      description: "Add-On Items"
+    additionals:
+      type: "string"
+      description: "additionals"
+    taxes:
+      type: "string"
+      description: "taxes"
+    fees:
+      type: "string"
+      description: "Fees"
+    bookingTotal:
+      type: "string"
+      description: "Booking Total"
+    confirmBooking:
+      type: "string"
+      description: "Confirm Booking"
+    bookingConfirmation:
+      type: "string"
+      description: "Booking Confirmation"
+    reservation:
+      type: "string"
+      description: "Reservation"
+    checkInDate:
+      type: "string"
+      description: "Check-in date"
+    checkInTime:
+      type: "string"
+      description: "Check-in time"
+    checkOutDate:
+      type: "string"
+      description: "Check-out date"
+    guestName:
+      type: "string"
+      description: "Guest name"
+    guestEmail:
+      type: "string"
+      description: "Email Address"
+    addToCalendar:
+      type: "string"
+      description: "Add to calendar"
+    shareReservation:
+      type: "string"
+      description: "Share reservation"
+    hotelInformation:
+      type: "string"
+      description: "Hotel Information"
+    billingInformation:
+      type: "string"
+      description: "Billing Information"
+    cancellationPolicy:
+      type: "string"
+      description: "Cancellation Policy"
+    modifyReservation:
+      type: "string"
+      description: "Modify reservation"
+    cancelReservation:
+      type: "string"
+      description: "Cancel reservation"
+\end{codeblock}
+
+\rSec1[schemas.Address]{Address}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "city"
+  - "country"
+  - "line1"
+  - "stateOrProvince"
+  - "zipOrPostCode"
+  properties:
+    id:
+      type: "string"
+      description: address.id
+    line1:
+      type: "string"
+      description: "Address First Line"
+    line2:
+      type: "string"
+      description: "Address Second Line"
+    city:
+      type: "string"
+      description: Address City
+    stateOrProvince: 
+      type: "string"
+      description: State of Province
+    zipOrPostCode:
+      type: "string"
+      description: Zip or Postal Code
+    country:
+      type: "string"
+      description: Country
+\end{codeblock}
+
+\rSec1[schemas.PaymentMethod]{PaymentMethod}
+\begin{codeblock}
+  type: "object"
+  required:
+  - "address"
+  - "cardNumber"
+  - "cvv"
+  - "expMonth"
+  - "expYear"
+  - "id"
+  - "nameOnCard"
+  - "owner"
+  - "typeOfCard"
+  properties:
+    id:
+      type: "string"
+      description: paymentMethod.id
+    owner:
+      type: 
+      - "string"
+      - "null"
+      description: owner.id or null
+    typeOfCard:
+      type: "string"
+      description: "Visa, MasterCard, determined by server based on cardNumber"
+    nameOnCard:
+      type: "string"
+    cardNumber:
+      type: "string"
+    expMonth:
+      type: "string"
+    expYear:
+      type: "string"
+    cvv:
+      type: "string"
+    address:
+      \$ref: "#/definitions/Address"
+\end{codeblock}
+
+\rSec1[schemas.ImageData]{ImageData}
+\begin{codeblock}
+  type: "string"
+  description: "Binary Image data to be transmitted"
+  format: byte
+\end{codeblock}
+
+\rSec1[schemas.Item]{Item}
+\begin{codeblock}
+  type: "object"
+  description: An Item
+  properties:
+    id:
+      type: "string"
+      description: item.id
+    tiedToBookedRoomType:
+      type: "boolean"
+      description: "for a specific booked roomtype, or not"
+    timeType:
+      type: "string"
+      description: "for a specific day & time, day only, each day of stay, or not"
+      enum:
+      - "none"
+      - "day"
+      - "day/Time/interval"
+      - "eachDay"
+    tiedGuest:
+      type: "string"
+      description: "for one guest, all guests? for one day, all days?"
+      enum:
+      - "none"
+      - "perOccupant"
+      - "perGuest"
+    image:
+      type: "string"
+      description: Items image URL
+\end{codeblock}
+
+\rSec1[schemas.RoomTypeLocalizedStrings]{RoomTypeLocalizedStrings}
+\begin{codeblock}
+  type: object
+  required:
+    - "name"
+    - "description"
+  properties:
+     name:
+        type: "string"
+        description: The language specific name. 
+     description:
+        type: "string"
+        description: The language specific description.
+\end{codeblock}
+
+\rSec1[schemas.RoomTypeClassLocalizedStrings]{RoomTypeClassLocalizedStrings}
+\begin{codeblock}
+  type: object
+  required:
+    - "name"
+    - "description"
+  properties:
+     name:
+        type: "string"
+        description: The language specific name. 
+     description:
+        type: "string"
+        description: The language specific description.
+\end{codeblock}
+
+\rSec1[schemas.GuestTypeLocalizedStrings]{GuestTypeLocalizedStrings}
+\begin{codeblock}
+  required:
+    - "nameSingular"
+    - "namePlural"
+    - "tooltip"
+  type: object
+  properties:
+    nameSingular:
+      type: "string"
+      description: The language specific singular name. e.g. adult
+    namePlural:
+      type: "string"
+      description: The language specific plural. e.g. adults
+    tooltip:
+      type: "string"
+      description: The language specific tooltip. 
+\end{codeblock}
+
+\rSec1[schemas.CodeTypeLocalizedStrings]{CodeTypeLocalizedStrings}
+\begin{codeblock}
+  required:
+    - "displayName"
+    - "tooltip"
+  type: object
+  properties:
+    displayName:
+      type: "string"
+      description: The language specific display name. 
+    tooltip:
+      type: "string"
+      description: The language specific tooltip. 
+\end{codeblock}
+
+\rSec1[schemas.RateLocalizedStrings]{RateLocalizedStrings}
+\begin{codeblock}
+  type: object
+  required:
+    - "name"
+    - "description"
+    - "policy"
+  properties:
+    name:
+      type: "string"
+      description: The language specific name. 
+    description:
+      type: "string"
+      description: The language specific description.
+    policy:
+      type: "string"
+      description: The language specific policy.
+\end{codeblock}
+
+\rSec1[schemas.ChargeTypeLocalizedStrings]{ChargeTypeLocalizedStrings}
+\begin{codeblock}
+  type: object
+  required:
+    - "name"
+  properties:
+     name:
+        type: "string"
+        description: The language specific name. 
+\end{codeblock}
+
+\rSec1[schemas.RoomFeatureLocalizedStrings]{RoomFeatureLocalizedStrings}
+\begin{codeblock}
+  type: object
+  properties:
+   text:
+      type: "string"
+      description: The language specific text. 
+\end{codeblock}
+
+\rSec1[schemas.ItemLocalizedStrings]{ItemLocalizedStrings}
+\begin{codeblock}
+  type: object
+  required:
+    - "name"
+    - "description"
+    - "policy"
+  properties:
+    name:
+      type: "string"
+      description: The language specific name. 
+    description:
+      type: "string"
+      description: The language specific description.
+    policy:
+      type: "string"
+      description: The language specific policy.
+\end{codeblock}
+
+
+\rSec1[schemas.rfc1123datetime]{RFC-1123 Date-Time}
+
+See \tcode{http://www.ietf.org/rfc/rfc1123.txt}
+
+\rSec2[schemas.rfc1123datetime.syntax]{Syntax}
+
+\begin{codeblock}
+     date-time   =  [ day "," ] date time        ; dd mm yy
+                                                 ;  hh:mm:ss zzz
+
+     day         =  "Mon"  / "Tue" /  "Wed"  / "Thu"
+                 /  "Fri"  / "Sat" /  "Sun"
+
+     date        = 1*2DIGIT month 2*4DIGIT       ; day month year
+                                                 ;  e.g. 20 Jun 82
+
+     month       =  "Jan"  /  "Feb" /  "Mar"  /  "Apr"
+                 /  "May"  /  "Jun" /  "Jul"  /  "Aug"
+                 /  "Sep"  /  "Oct" /  "Nov"  /  "Dec"
+
+     time        =  hour zone                    ; ANSI and Military
+
+     hour        =  2DIGIT ":" 2DIGIT [":" 2DIGIT]
+                                                 ; 00:00:00 - 23:59:59
+
+     zone        =  "UT"  / "GMT"                ; Universal Time
+                                                 ; North American : UT
+                 /  "EST" / "EDT"                ;  Eastern:  - 5/ - 4
+                 /  "CST" / "CDT"                ;  Central:  - 6/ - 5
+                 /  "MST" / "MDT"                ;  Mountain: - 7/ - 6
+                 /  "PST" / "PDT"                ;  Pacific:  - 8/ - 7
+                 /  1ALPHA                       ; Military: Z = UT;
+                                                 ;  A:-1; (J not used)
+                                                 ;  M:-12; N:+1; Y:+12
+                 / ( ("+" / "-") 4DIGIT )        ; Local differential
+                                                 ;  hours+min. (HHMM)
+\end{codeblock}
+
+
+\rSec2[schemas.rfc1123datetime.semantics]{Semantics}
+
+\textbf{\tcode{RFC-822}}
+
+\pnum
+If included, day-of-week must be the day implied by the date
+specification.
+
+\pnum
+Time zone may be indicated in several ways.  "UT" is Universal Time
+(formerly called "Greenwich Mean Time"); "GMT" is permitted as a
+reference to Universal Time.  The military standard uses a single
+character for each zone.  "Z" is Universal Time.  "A" indicates one
+hour earlier, and "M" indicates 12 hours earlier; "N" is one hour
+later, and "Y" is 12 hours later.  The letter "J" is not used.  The
+other remaining two forms are taken from ANSI standard X3.51-1975.
+One allows explicit indication of the amount of offset from UT; the
+other uses common 3-character strings for indicating time zones in
+North America.
+
+\textbf{\tcode{RFC-1123}}
+
+\pnum
+All mail software SHOULD use 4-digit years in dates, to ease the
+transition to the next century.
+
+\pnum
+There is a strong trend towards the use of numeric timezone
+indicators, and implementations SHOULD use numeric timezones instead
+of timezone names.  However, all implementations MUST accept either
+notation.  If timezone names are used, they MUST be exactly as defined
+in RFC-822.
+
+\pnum
+The military time zones are specified incorrectly in RFC-822: they
+count the wrong way from UT (the signs are reversed).  As a result,
+military time zones in RFC-822 headers carry no information.
+
+\begin{longtable}{ c c c }
+\caption{Corrected Military Time Zone Offsets} \\
+\toprule
+\textbf{Name} &
+\textbf{Letter} &
+\textbf{UTC offset} \\
+\midrule
+\endhead
+Alpha & A & UTC+01:00 \\
+Bravo & B & UTC+02:00 \\
+Charlie & C & UTC+03:00 \\
+Delta & D & UTC+04:00 \\
+Echo & E & UTC+05:00 \\
+Foxtrot & F & UTC+06:00 \\
+Golf & G & UTC+07:00 \\
+Hotel & H & UTC+08:00 \\
+India & I & UTC+09:00 \\
+Kilo & K & UTC+10:00 \\
+Lima & L & UTC+11:00 \\
+Mike & M & UTC+12:00 \\
+November & N & UTC-01:00 \\
+Oscar & O & UTC-02:00 \\
+Papa & P & UTC-03:00 \\
+Quebec & Q & UTC-04:00 \\
+Romeo & R & UTC-05:00 \\
+Sierra & S & UTC-06:00 \\
+Tango & T & UTC-07:00 \\
+Uniform & U & UTC-08:00 \\
+Victor & V & UTC-09:00 \\
+Whiskey & W & UTC-10:00 \\
+X-ray & X & UTC-11:00 \\
+Yankee & Y & UTC-12:00 \\
+Zulu & Z & UTC$\pm$00:00 \\
+\end{longtable}
+
+
+
+\pnum
+Finally, note that there is a typo in the definition of "zone" in the
+syntax summary of appendix D; the correct definition occurs in Section
+3 of RFC-822.
